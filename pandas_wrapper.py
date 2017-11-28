@@ -28,7 +28,7 @@ class PandasWrapper(object):
   def __init__(self, project_id):
     self.datastore_client = datastore.Client(project_id)
 
-  def dataframe_to_datastore(self, df, datastore_kind_name=None, update_keys=None):
+  def dataframe_to_datastore(self, df, datastore_kind_name=None, update_keys=None, over_write=False):
 
     logger.debug("datastore_kind_name:" + str(datastore_kind_name))
     logger.debug("update_keys:" + str(update_keys))
@@ -49,7 +49,8 @@ class PandasWrapper(object):
       if len(result) > 0:
         task = result[0]
         logger.debug("update:" + str(task))
-        continue
+        if not (over_write):
+          continue
       else:
         logger.debug("insert:" + str(task))
 
