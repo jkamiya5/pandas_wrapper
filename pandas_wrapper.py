@@ -79,27 +79,8 @@ class PandasWrapper(object):
 
     logger.debug("proc done." + "count:" + str(count))
 
-  def set_diff_dataframes(self, df, df2, join_keys=None):
-
-    init_column_name_list = df.columns
-    df = df.merge(df2, on=join_keys, how='left')
-    column_name_list = df.columns
-    is_null_col_name = None
-    for c in column_name_list:
-      if "_y" in c:
-        c_ = c.replace("_y", "")
-        if c_ not in join_keys:
-          is_null_col_name = c
-          break
-
-    df = df[df[is_null_col_name].isnull()]
-    logger.debug("excluded_df.count:" + str(len(df)))
-    column_name_list = df.columns
-    for c in column_name_list:
-      if "_x" in c:
-        c_ = c.replace("_x", "")
-        df = df.rename(columns={c: c_})
-    column_name_list = df.columns
-    drop_cols = list(set(column_name_list) - set(init_column_name_list))
-    df = df.drop(drop_cols, axis=1)
+  def set_diff_dataframes(self, df_, df2_, join_keys=None):
+    i1 = df_.set_index(join_keys).index
+    i2 = df2_.set_index(join_keys).index
+    df = df_[~i1.isin(i2)]
     return df
